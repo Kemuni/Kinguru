@@ -1,2 +1,10 @@
+# Core
 fastapi[standard]~=0.115.0
 
+# Settings
+pydantic-settings~=2.5.2
+
+# Database
+sqlmodel~=0.0.22
+alembic~=1.13.3
+psycopg-c~=3.2.3
