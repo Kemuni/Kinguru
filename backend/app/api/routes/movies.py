@@ -57,8 +57,20 @@ def get_random_movies(session: SessionDepends):
     random_movies = random.sample(movies, min(10, len(movies)))
     return random_movies
 
+@router.get("/api/movies/recommendations/", response_model=List[Movie])
+def recommend_movies(
+    genre: str,
+    year: int,
+    session: SessionDepends,
+    limit: int = 10
+):
+    min_year = year - 5
+    max_year = year + 5
 
-@router.post("/api/movies/recommendations/", response_model=List[Movie])
-def recommend_movies(session: SessionDepends, genres: List[str]):
-    query = select(Movie).where(Movie.genre.in_(genres))
-    return session.exec(query.limit(10)).all()
+    query = select(Movie).where(
+        Movie.genre == genre,
+        min_year <= Movie.year,
+        max_year >= Movie.year
+    ).limit(limit)
+    return session.exec(query).all()
+
