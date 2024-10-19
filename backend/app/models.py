@@ -23,3 +23,11 @@ class Movie(SQLModel, table=True):
     description: Optional[str] = None
     year: Optional[int] = None
     rating: Optional[float] = None
+    image_url: Optional[str] = None
+
+class MovieCreate(SQLModel):
+    title: str
+    genre: str
+    description: Optional[str] = None
+    year: Optional[int] = None
+    rating: Optional[float] = None
