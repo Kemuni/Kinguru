@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+
+:root {
+  /* ---------------- Цвета ---------------- */
+  --native-bg-color: #323232;
+  --native-focus-color: #d27856;
+  --native-text-color: #fff;
+  --native-hint-color: #888;
+  --native-secondary-bg-color: #464646;
+  --additional-yellow: #d2a256;
+  --native-secondary-text-color: #cdcdcd;
+  --additional-focus-fill: rgba(210, 120, 86, 0.15);
+  --additional-green: #388538;
+  --additional-hint-fill: rgba(136, 136, 136, 0.15);
+}
+
+
+body {
+  color: var(--native-text-color);
+  background-color: var(--native-secondary-bg-color);
+  background-image: url('../images/dark_background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
