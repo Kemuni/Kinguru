@@ -61,7 +61,7 @@ def upload_movies(session: SessionDepends, file: UploadFile = File(...)):
             "description": row.get("description"),
             "year": int(row["year"]) if row.get("year") else None,
             "rating": float(row["rating"]) if row.get("rating") else None,
-            "img_path": float(row["img_path"]) if row.get("img_path") else None
+            "img_path": row.get["img_path"]
         }
         movies_data.append(movie_data)
 
