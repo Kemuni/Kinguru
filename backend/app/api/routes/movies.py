@@ -73,11 +73,11 @@ def upload_movies(session: SessionDepends, file: UploadFile = File(...)):
 
 
 
-@router.get("/api/movies/`/", response_model=List[Movie])
+@router.get("/api/movies/filter/", response_model=List[Movie])
 def get_movies(
         session: SessionDepends,
-        genre: Optional[str] = str | None,
-        title: Optional[str] = str | None,
+        genre: Optional[str] = None,
+        title: Optional[str] = None,
         page: int = 1,
         page_size: int = 10
 ):
