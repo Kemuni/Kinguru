@@ -101,7 +101,7 @@ def get_movies(
     return MoviesPublic(items=movies, count=len(movies))
 
 
-@router.delete("/api/movies/<content_id: int>/", response_model=DefaultAnswer)
+@router.delete("/api/movies/{content_id}/", response_model=DefaultAnswer)
 def delete_movie(session: SessionDepends, content_id: int):
     movie = session.get(Movie, content_id)
     if not movie:

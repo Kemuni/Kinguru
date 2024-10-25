@@ -8,3 +8,7 @@ pydantic-settings~=2.5.2
 sqlmodel~=0.0.22
 alembic~=1.13.3
 psycopg-c~=3.2.3
+
+# Testing
+pytest~=8.3.3
+coverage~=7.6.4
