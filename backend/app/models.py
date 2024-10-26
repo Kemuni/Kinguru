@@ -1,6 +1,6 @@
-from email.policy import default
 from typing import Optional
 
+from pydantic import field_validator
 from sqlalchemy import Text
 from sqlmodel import Field, SQLModel
 
@@ -34,7 +34,13 @@ class MovieBase(SQLModel):
 
 
 class MovieCreate(MovieBase):
-    pass
+    @field_validator('image_url')
+    def val_image_url(cls, value: str) -> Optional[str]:
+        if not value:
+            return None
+        assert value.startswith("https://")
+        assert any(value.endswith(file_extension) for file_extension in [".png", ".jpg"])
+        return value
 
 
 class Movie(MovieBase, table=True):

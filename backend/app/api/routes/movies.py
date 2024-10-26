@@ -1,9 +1,8 @@
 import csv
-import os
 import random
-from typing import List, Optional
+from typing import List, Optional, Annotated
 
-from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from pydantic import ValidationError
 from sqlmodel import select
 
@@ -12,41 +11,14 @@ from app.models import Movie, MovieCreate, MoviesFileUploadAnswer, MoviesPublic,
 
 router = APIRouter()
 
-IMAGE_UPLOAD_DIR = "media_images/"
-MAX_FILE_SIZE = 2 * 1024 * 1024
-
-if not os.path.exists(IMAGE_UPLOAD_DIR):
-    os.makedirs(IMAGE_UPLOAD_DIR)
 
 @router.post(
     "/api/movies/upload_by_form/",
-    description="Создаёт фильм/сериал с помощью формы. Если изображение отправлено и в файл, и в URL,"
-                " то берём изображение из файла",
+    description="Создаёт фильм/сериал с помощью формы",
     response_model=Movie,
 )
-async def create_movie(
-    session: SessionDepends,
-    movie_data: MovieCreate = Depends(),
-    file: Optional[UploadFile] = File(None),
-):
+async def create_movie(session: SessionDepends, movie_data: Annotated[MovieCreate, Form()]):
     movie = Movie.model_validate(movie_data)
-
-    if not movie.image_url and file is None:
-        raise HTTPException(status_code=400, detail="Invalid request. You have to choose at least one image.")
-
-    if file:
-        if file.content_type not in ["image/jpeg", "image/png"]:
-            raise HTTPException(status_code=400, detail="Invalid file type. Only JPEG and PNG are allowed.")
-
-        contents = await file.read()
-        if len(contents) > MAX_FILE_SIZE:
-            raise HTTPException(status_code=400, detail="File size exceeds the 2MB limit.")
-
-        file_path = os.path.join(IMAGE_UPLOAD_DIR, f'{movie.title}-{file.filename}')
-        movie.image_url = str(file_path)
-        with open(file_path, "wb") as f:
-            f.write(contents)
-
     session.add(movie)
     session.commit()
     session.refresh(movie)
@@ -66,6 +38,11 @@ async def upload_movies(session: SessionDepends, file: UploadFile = File(...)):
     content = await file.read()
     reader = csv.DictReader(content.decode("utf-8").splitlines(), delimiter=';')
 
+    file_fieldnames = set(reader.fieldnames)
+    req_fields = ['title', 'genre', 'description', 'year', 'rating', 'image_url']
+    if len(file_fieldnames) != 6 or not all(field in file_fieldnames for field in req_fields):
+        raise HTTPException(status_code=400, detail=f"Invalid file headers. There must be: {', '.join(req_fields)}.")
+
     movies_data: List[MovieCreate] = []
     for row in reader:
         try:
@@ -73,7 +50,9 @@ async def upload_movies(session: SessionDepends, file: UploadFile = File(...)):
                 MovieCreate(**row)
             )
         except ValidationError as exc:
-            raise HTTPException(status_code=400, detail=f"Validation error: {exc}")
+            raise HTTPException(
+                status_code=400, detail=f"Validation error in #{len(movies_data)+1} row. Details: {exc}"
+            )
 
     session.bulk_insert_mappings(Movie, movies_data)
     session.commit()
