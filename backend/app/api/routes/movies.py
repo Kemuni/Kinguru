@@ -27,6 +27,7 @@ async def create_movie(session: SessionDepends, movie_data: Annotated[MovieCreat
 
 @router.post(
     "/api/movies/upload_by_csv/",
+    # TODO изменить описание, добавив необходимые поля (Вынести в отдельную константу список)
     description='В файле необходимо указать такие поля как "title", "genre", "description", "year", "rating" и'
                 ' "image_url". Разделитель ";".',
     response_model=MoviesFileUploadAnswer,
