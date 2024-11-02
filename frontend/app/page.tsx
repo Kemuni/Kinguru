@@ -1,8 +1,8 @@
 // import SmallContentCard from "@/components/SmallContentCard";
 import {Button} from "@/components/Button";
 import Link from "next/link";
-import React from "react";
 import Logo from "@/components/Logo";
+import React from "react";
 
 export default function Home() {
   return (
