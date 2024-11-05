@@ -11,4 +11,4 @@ export const TabItem: React.FC<TabItemProps> = ({label, children}) => (
   </div>
 );
 
-TabItem.displayName = "TabItem";
+export default TabItem;
