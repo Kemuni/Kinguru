@@ -8,7 +8,7 @@ import {FC} from "react";
 
 export const MovieCard: FC = () => {
   return (
-    <TabList activeTabIndex={1}>
+    <TabList activeTabIndex={0}>
       <TabItem label="О сериале">
         <div>
           <div className="relative w-full" style={{height: "52vh"}}>
