@@ -23,4 +23,4 @@ def get_users(session: SessionDepends, skip: int = 0, limit: int = 10) -> Any:
     )
     users = session.exec(get_query).all()
 
-    return UsersPublic(data=users, count=count)
+    return UsersPublic(items=users, count=count)
