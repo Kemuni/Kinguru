@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: Literal["local", "production"] = "local"
 
     PROJECT_NAME: str
-    POSTGRES_HOST: str = "127.0.0.1"
+    POSTGRES_SERVER: str = "127.0.0.1"
     POSTGRES_PORT: int = 5432
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
@@ -28,7 +28,7 @@ class Settings(BaseSettings):
             scheme="postgresql+psycopg",
             username=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
-            host=self.POSTGRES_HOST,
+            host=self.POSTGRES_SERVER,
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
         )
