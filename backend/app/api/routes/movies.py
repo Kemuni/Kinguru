@@ -1,19 +1,27 @@
 import csv
 import random
+from math import ceil
 from typing import List, Optional, Annotated
 
+import httpx
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
-from pydantic import ValidationError
-from sqlmodel import select
+from fastapi.params import Body
+from pydantic import ValidationError, Field
+from sqlalchemy.sql.functions import count
+from sqlmodel import select, or_
 
 from app.api.dependencies import SessionDepends
-from app.models import Movie, MovieCreate, MoviesFileUploadAnswer, MoviesPublic, DefaultAnswer
+from app.crud import get_recommended_movies
+from app.models import (
+    Movie, MovieCreate, MoviesFileUploadAnswer, DefaultAnswer, Genre, Pager, ModelsPaginatedPublic, ModelsPublic,
+    MoviePublic
+)
 
 router = APIRouter()
 
 
 @router.post(
-    "/api/movies/upload_by_form/",
+    "/api/movies/by_form/",
     description="Создаёт фильм/сериал с помощью формы",
     response_model=Movie,
 )
@@ -26,11 +34,12 @@ async def create_movie(session: SessionDepends, movie_data: Annotated[MovieCreat
 
 
 @router.post(
-    "/api/movies/upload_by_csv/",
+    "/api/movies/by_csv/",
     # TODO изменить описание, добавив необходимые поля (Вынести в отдельную константу список)
     description='В файле необходимо указать такие поля как "title", "genre", "description", "year", "rating" и'
                 ' "image_url". Разделитель ";".',
     response_model=MoviesFileUploadAnswer,
+    deprecated=True,
 )
 async def upload_movies(session: SessionDepends, file: UploadFile = File(...)):
     if file.content_type != "text/csv":
@@ -60,25 +69,44 @@ async def upload_movies(session: SessionDepends, file: UploadFile = File(...)):
     return MoviesFileUploadAnswer(message="Фильмы успешно загружены", content_amount = len(movies_data))
 
 
-@router.get("/api/movies/", response_model=MoviesPublic)
+@router.get("/api/genres/")
+def get_genres(session: SessionDepends) -> ModelsPublic[Genre]:
+    genres = session.exec(select(Genre).order_by(Genre.id)).all()
+    return ModelsPublic(items=genres)
+
+
+@router.get("/api/movies/")
 def get_movies(
         session: SessionDepends,
-        genre: Optional[str] = None,
+        genre_id: Optional[int] = None,
         title: Optional[str] = None,
         page: int = 1,
         page_size: int = 10
-):
+) -> ModelsPaginatedPublic[MoviePublic]:
     offset = (page - 1) * page_size
 
     query = select(Movie)
 
-    if genre:
-        query = query.where(Movie.genre.icontains(genre))
+    if genre_id:
+        query = query.where(Movie.genres.any(Genre.id == genre_id))
     if title:
-        query = query.where(Movie.title.icontains(title))
+        query = query.where(
+            or_(
+                Movie.ru_title.icontains(title),
+                Movie.en_title.icontains(title),
+            )
+        )
 
     movies = session.exec(query.offset(offset).limit(page_size)).all()
-    return MoviesPublic(items=movies, count=len(movies))
+    movies_amount = session.exec(query.with_only_columns(count())).first()
+    return ModelsPaginatedPublic(
+        items=movies,
+        pager=Pager(
+            total_elements=movies_amount,
+            page_size=page_size,
+            current_page=page,
+            pages_count=ceil(movies_amount/page_size)),
+    )
 
 
 @router.delete("/api/movies/{content_id}/", response_model=DefaultAnswer)
@@ -91,26 +119,17 @@ def delete_movie(session: SessionDepends, content_id: int):
     return DefaultAnswer(message="Фильм удален")
 
 
-@router.get("/api/movies/random/", response_model=MoviesPublic)
-def get_random_movies(session: SessionDepends):
+@router.get("/api/movies/random/")
+def get_random_movies(session: SessionDepends) -> ModelsPublic[MoviePublic]:
     movies = session.exec(select(Movie)).all()
     random_movies = random.sample(movies, min(10, len(movies)))
-    return MoviesPublic(items=random_movies, count=len(random_movies))
+    return ModelsPublic(items=random_movies)
 
-@router.get("/api/movies/recommendations/", response_model=MoviesPublic)
-def recommend_movies(
-    genre: str,
-    year: int,
-    session: SessionDepends,
-    limit: Optional[int] = 10
-):
-    min_year = year - 10
-    max_year = year + 10
 
-    query = select(Movie).where(
-        Movie.genre.icontains(genre),
-        min_year <= Movie.year,
-        max_year >= Movie.year
-    ).limit(limit)
-    movies = session.exec(query).all()
-    return MoviesPublic(items=movies, count=len(movies))
+@router.post("/api/movies/recommendations/")
+def get_movies_recommendations(
+        session: SessionDepends,
+        liked_movies: Annotated[list[int], Body(max_length=10)],
+        disliked_movies: Annotated[list[int], Body(max_length=10)],
+) -> ModelsPublic[MoviePublic]:
+    return ModelsPublic(items=get_recommended_movies(session, liked_movies, disliked_movies))
