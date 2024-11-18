@@ -4,7 +4,7 @@ from math import ceil
 from typing import List, Optional, Annotated
 
 import httpx
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Response
 from fastapi.params import Body
 from pydantic import ValidationError, Field
 from sqlalchemy.sql.functions import count
@@ -133,3 +133,24 @@ def get_movies_recommendations(
         disliked_movies: Annotated[list[int], Body(max_length=10)],
 ) -> ModelsPublic[MoviePublic]:
     return ModelsPublic(items=get_recommended_movies(session, liked_movies, disliked_movies))
+
+
+@router.get(
+    "/api/movies/poster/{poster_path}",
+    responses = {
+        200: {
+            "content": {"image/jpg": {}}
+        }
+    },
+    response_class=Response
+)
+def get_movies_image(poster_path: str) -> Response:
+    if not any(poster_path.endswith(i) for i in [".jpg", ".jpeg", ".png"]):
+        raise HTTPException(status_code=404, detail="Неверный формат пути постера. Постер не найден.")
+
+    try:
+        response = httpx.get(f"https://image.tmdb.org/t/p/original/{poster_path}")
+        response.raise_for_status()
+    except httpx.HTTPError:
+        raise HTTPException(status_code=500, detail="В данный момент сервис недоступен. Невозможно получить постер.")
+    return Response(content=response.content, media_type="image/jpg")
