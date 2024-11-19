@@ -3,39 +3,53 @@ import ChevronIco from "@/public/static/icons/chevron.svg";
 import Image from "next/image";
 import Logo from "@/components/Logo";
 import Link from "next/link";
-import {MovieCard} from "@/components/MovieCard";
+import {MovieReviewCard} from "@/components/MovieReviewCard";
 
-export default function Survey() {
+interface SurveyResultsQuery {
+  likedMovies?: string,
+  dislikedMovies?: string,
+}
+
+interface SurveyResults {
+  likedMovies: number[],
+  dislikedMovies: number[],
+}
+
+export default async function SurveyResults(props: {searchParams: { [key: string]: string | string[] | undefined }}) {
+  // Получаем результаты тестирования, если возможно
+  const searchParams =  props.searchParams as SurveyResultsQuery;
+  let surveyResults: SurveyResults | null;
+  if (searchParams.likedMovies !== undefined && searchParams.dislikedMovies  !== undefined ) {
+    surveyResults = {
+      likedMovies: JSON.parse(searchParams.likedMovies),
+      dislikedMovies: JSON.parse(searchParams.dislikedMovies),
+    }
+  } else {
+    surveyResults = null;
+  }
+
   return (
-    <div className="flex flex-col h-full items-center justify-center gap-2">
+    <div className="flex flex-col h-dvh max-h-dvh items-center justify-center gap-2">
       <header className="grid grid-cols-[48px_1fr] w-full items-center justify-center gap-3 py-2 px-4 mx-4 mt-2">
         <Link href="/">
           <Button variant="dark" size="icon_auto">
-            <Image width={48} height={48} src={ChevronIco} alt="Back" />
+            <Image width={48} height={48} src={ChevronIco} alt="Back"/>
           </Button>
         </Link>
         <div className="w-full pe-16">
           <Logo size="lg"/>
         </div>
       </header>
-      <main
-        className="bg-[var(--native-bg-color)] rounded-t-3xl w-full h-full flex flex-col justify-between
-        items-center gap-2 py-4 px-3 ring-2 ring-[var(--native-secondary-bg-color)]">
-        <div className="flex flex-col gap-2">
-          <div className="w-full font-[family-name:var(--font-subheader)] text-3xl">
-            Рекомендуем вам:
-          </div>
-          <MovieCard/>
-        </div>
-        <div className="flex flex-row justify-around w-full mb-4">
-          <Button variant="secondary_dark" size="icon_auto" className="rounded-full p-2 drop-shadow-md">
-            <Image width={64} height={64} src={ChevronIco} alt="Back"/>
-          </Button>
-          <Button variant="secondary_dark" size="icon_auto" className="rounded-full p-2 drop-shadow-md">
-            <Image width={64} height={64} src={ChevronIco} className="rotate-180" alt="Back"/>
-          </Button>
-        </div>
-      </main>
+      <div className="w-full flex-grow overflow-hidden">
+        {
+          surveyResults !== null
+          ? <MovieReviewCard
+              likedMovies={surveyResults.likedMovies}
+              dislikedMovies={surveyResults.dislikedMovies}
+            />
+          : <h2 className="text-2xl font-[family-name:var(--font-subheader)]">Невозможно получить результаты.</h2>
+        }
+      </div>
     </div>
   );
 }
