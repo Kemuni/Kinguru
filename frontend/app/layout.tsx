@@ -29,7 +29,7 @@ export default function RootLayout({
         className={`${lilitaOne.variable} ${libreFranklin.variable} ${inter.variable} antialiased flex justify-center 
         w-full`}
       >
-        <div className="w-full lg:w-2/5 xl:w-1/4">
+        <div className="w-full lg:w-1/3 xl:w-1/4">
           {children}
         </div>
       </body>

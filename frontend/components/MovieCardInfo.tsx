@@ -27,7 +27,7 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
     <TabList activeTabIndex={0}>
       <TabItem label="О сериале">
         <div className="flex flex-col gap-2 w-full h-full">
-          <div className="relative flex-grow max-h-[52dvh] sm:max-h-[60dvh] aspect-2/3">
+          <div className="relative w-full flex-grow max-h-[48dvh] sm:max-h-[46dvh] aspect-2/3">
             <Image fill
                  sizes="100%"
                  className="object-cover rounded-xl"
@@ -158,7 +158,7 @@ const MovieCardSkeleton: FC = () => {
     <TabList activeTabIndex={0}>
       <TabItem label="О сериале">
         <div className="flex flex-col gap-2 w-full h-full animate-pulse">
-          <div className="relative flex-grow max-h-[52dvh] sm:max-h-[60dvh] aspect-2/3">
+          <div className="relative w-full flex-grow max-h-[48dvh] sm:max-h-[46dvh] aspect-2/3">
             <Image fill
                    sizes="100%"
                    className="object-cover rounded-xl"
