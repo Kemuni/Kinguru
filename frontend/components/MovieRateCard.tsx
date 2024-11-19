@@ -33,14 +33,14 @@ function movieReducer(state: MovieState, action: MovieAction) {
   const { type, movieId } = action;
   switch (type) {
     case MovieActionType.LIKE:
-      let newLikedIds = [...state.likedIds, movieId]
+      const newLikedIds = [...state.likedIds, movieId]
       return {
         ...state,
         movieIndex: state.movieIndex + 1,
         likedIds: newLikedIds,
       }
     case MovieActionType.DISLIKE:
-      let newDislikedIds = [...state.dislikedIds, movieId];
+      const newDislikedIds = [...state.dislikedIds, movieId];
       return {
         ...state,
         movieIndex: state.movieIndex + 1,
@@ -53,7 +53,7 @@ function movieReducer(state: MovieState, action: MovieAction) {
 
 
 export const MovieRateCard: FC = () => {
-  const { movies, isLoading, _} = useGetRandomMovieListItems();
+  const { movies, isLoading} = useGetRandomMovieListItems();
   const [ currentMovie, setCurrentMovie ] = useState<Movie>(movies[0]);
   const [ movieState, movieDispatch ] = useReducer(
     movieReducer, { movieIndex: 0, likedIds: [], dislikedIds: [] }
@@ -61,9 +61,9 @@ export const MovieRateCard: FC = () => {
   const { push } = useRouter();
 
   useEffect(() => {
-    if (movies.length != 0)
+    if (!isLoading && movies.length != 0)
       setCurrentMovie(movies[movieState.movieIndex]);
-  }, [movieState, isLoading]);
+  }, [movieState, movies, isLoading]);
 
   function handleRateClick(type: MovieActionType) {
     if (movieState.movieIndex + 2 > movies.length) {

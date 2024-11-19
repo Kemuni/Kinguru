@@ -21,14 +21,14 @@ interface MovieReviewCardProps {
 
 
 export const MovieReviewCard: FC<MovieReviewCardProps> = ({ likedMovies, dislikedMovies}) => {
-  const { movies, isLoading, _} = useGetRecommendationMovieListItems(likedMovies, dislikedMovies);
+  const { movies, isLoading} = useGetRecommendationMovieListItems(likedMovies, dislikedMovies);
   const [ currentMovie, setCurrentMovie ] = useState<Movie>(movies[0]);
   const [ currentMovieId, setCurrentMovieID ] = useState<number>(0);
 
   useEffect(() => {
-    if (movies.length != 0)
+    if (!isLoading && movies.length != 0)
       setCurrentMovie(movies[currentMovieId]);
-  }, [currentMovieId, isLoading]);
+  }, [currentMovieId, movies, isLoading]);
 
   function handleButtonClick(type: MovieActionType) {
     switch (type) {
