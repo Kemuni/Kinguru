@@ -26,9 +26,12 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body
-        className={`${lilitaOne.variable} ${libreFranklin.variable} ${inter.variable} antialiased lg:px-72 xl:px-96`}
+        className={`${lilitaOne.variable} ${libreFranklin.variable} ${inter.variable} antialiased flex justify-center 
+        w-full`}
       >
-        {children}
+        <div className="w-full lg:w-2/5 xl:w-1/4">
+          {children}
+        </div>
       </body>
     </html>
   );

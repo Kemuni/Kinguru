@@ -6,7 +6,7 @@ export interface TabItemProps {
 }
 
 export const TabItem: React.FC<TabItemProps> = ({label, children}) => (
-  <div id={label}>
+  <div key={label} className="w-full h-full">
     {children}
   </div>
 );
