@@ -20,9 +20,7 @@ def get_most_wanted_genres(session: SessionDepends, movies_id: list[int], limit:
 
 def get_recommended_movies(session: SessionDepends, liked_movies: list[int], disliked_movies: list[int]) -> list[Movie]:
     liked_genres = get_most_wanted_genres(session=session, movies_id=liked_movies, limit=3)
-    print(liked_genres)
     disliked_genres = get_most_wanted_genres(session=session, movies_id=disliked_movies, limit=3)
-    print(disliked_genres)
 
     query = (
         select(Movie)
