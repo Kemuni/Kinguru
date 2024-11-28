@@ -26,8 +26,12 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
   return (
     <TabList activeTabIndex={0}>
       <TabItem label="О сериале">
-        <div className="flex flex-col gap-2 w-full h-full">
-          <div className="relative w-full flex-grow max-h-[48dvh] sm:max-h-[46dvh] aspect-2/3">
+
+        <div className="flex flex-col gap-2 w-full overflow-y-scroll h-[500px]"
+             style={{scrollbarWidth: "none" }}
+        >
+
+          <div className="relative w-full flex-grow max-h-[52dvh] sm:max-h-[55dvh] aspect-2/3">
             <Image fill
                  sizes="100%"
                  className="object-cover rounded-xl"
@@ -86,7 +90,7 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
         </div>
       </TabItem>
       <TabItem label="Детали">
-        <div className="flex flex-col gap-2 rounded-lg">
+        <div className="flex flex-col gap-2 rounded-lg overflow-y-scroll scrollbar h-[500px]">
           <div className="text-center">
             <span
               className="w-full font-[family-name:var(--font-subheader)] text-3xl"

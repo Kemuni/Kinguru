@@ -45,8 +45,11 @@ export const MovieReviewCard: FC<MovieReviewCardProps> = ({ likedMovies, dislike
     <div
       className="bg-[var(--native-bg-color)] rounded-t-3xl w-full h-full flex flex-col justify-between
         items-center gap-2 py-4 px-3 ring-2 ring-[var(--native-secondary-bg-color)]">
-      <div className="w-full flex-grow overflow-hidden lg:px-3">
-        <MovieCardInfo movie={currentMovie} />
+      <div className="w-full flex-grow lg:px-3 overflow-hidden">
+        <h2 className="text-left w-full font-[family-name:var(--font-subheader)] text-xl mb-2">
+          Рекомендуем вам:
+        </h2>
+        <MovieCardInfo movie={currentMovie}/>
       </div>
       <div className="h-fit w-full flex-shrink-0">
         <div className="flex flex-row justify-around mb-4">
