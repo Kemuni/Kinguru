@@ -1,6 +1,6 @@
-from typing import Any, Literal
+from typing import Literal
 
-from pydantic import PostgresDsn, computed_field
+from pydantic import PostgresDsn, computed_field, SecretStr
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     )
 
     ENVIRONMENT: Literal["local", "production"] = "local"
+
+    SECRET_KEY: SecretStr
 
     PROJECT_NAME: str
     POSTGRES_SERVER: str = "127.0.0.1"

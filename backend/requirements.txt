@@ -1,5 +1,6 @@
 # Core
 fastapi[standard]~=0.115.0
+fastapi-users[sqlalchemy]~=14.0.0
 
 # Settings
 pydantic-settings~=2.5.2
