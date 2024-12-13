@@ -4,13 +4,13 @@ from math import ceil
 from typing import List, Optional, Annotated
 
 import httpx
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Response
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Response, Depends
 from fastapi.params import Body
-from pydantic import ValidationError, Field
+from pydantic import ValidationError
 from sqlalchemy.sql.functions import count
 from sqlmodel import select, or_
 
-from app.api.dependencies import SessionDepends
+from app.api.dependencies import SessionDepends, current_active_user
 from app.crud import get_recommended_movies
 from app.models import (
     Movie, MovieCreate, MoviesFileUploadAnswer, DefaultAnswer, Genre, Pager, ModelsPaginatedPublic, ModelsPublic,
@@ -24,6 +24,7 @@ router = APIRouter()
     "/api/movies/by_form/",
     description="Создаёт фильм/сериал с помощью формы",
     response_model=Movie,
+    dependencies=[Depends(current_active_user)],
 )
 async def create_movie(session: SessionDepends, movie_data: Annotated[MovieCreate, Form()]):
     movie = Movie.model_validate(movie_data)
@@ -40,6 +41,7 @@ async def create_movie(session: SessionDepends, movie_data: Annotated[MovieCreat
                 ' "image_url". Разделитель ";".',
     response_model=MoviesFileUploadAnswer,
     deprecated=True,
+    dependencies=[Depends(current_active_user)],
 )
 async def upload_movies(session: SessionDepends, file: UploadFile = File(...)):
     if file.content_type != "text/csv":
@@ -109,7 +111,11 @@ def get_movies(
     )
 
 
-@router.delete("/api/movies/{content_id}/", response_model=DefaultAnswer)
+@router.delete(
+    "/api/movies/{content_id}/",
+    response_model=DefaultAnswer,
+    dependencies=[Depends(current_active_user)],
+)
 def delete_movie(session: SessionDepends, content_id: int):
     movie = session.get(Movie, content_id)
     if not movie:
