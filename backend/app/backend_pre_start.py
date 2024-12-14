@@ -4,6 +4,7 @@ from sqlalchemy import Engine
 from sqlmodel import Session, select
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
+from app.core.config import settings
 from app.core.db import engine
 
 logging.basicConfig(level=logging.INFO)
@@ -20,6 +21,7 @@ wait_seconds = 1
     after=after_log(logger, logging.WARN),
 )
 def init(db_engine: Engine) -> None:
+    print(str(settings.SQLALCHEMY_DATABASE_URI))
     try:
         with Session(db_engine) as session:
             # Пытаемся создать сессию, чтобы проверить, что БД работает
