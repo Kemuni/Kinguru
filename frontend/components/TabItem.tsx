@@ -1,12 +1,12 @@
-import {ReactNode} from "react";
+import React, {ReactNode} from "react";
 
-export interface TabItemProps {
+export interface TabItemProps extends React.HTMLProps<any> {
   label: string;
   children: ReactNode;
 }
 
-export const TabItem: React.FC<TabItemProps> = ({label, children}) => (
-  <div key={label} className="w-full h-full">
+export const TabItem: React.FC<TabItemProps> = ({label, children, className, ...props}) => (
+  <div key={label} className={className ?? "w-full min-h-full"} {...props}>
     {children}
   </div>
 );

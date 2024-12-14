@@ -5,7 +5,6 @@ import React, { ReactElement, useState } from "react";
 export interface TabListProps {
   activeTabIndex?: number; // Сделаем это свойство необязательным
   children: ReactElement<TabItemProps>[]; // Дочерние элементы
-
 }
 
 export const TabList: React.FC<TabListProps> = ({ children, activeTabIndex = 0 }) => {
@@ -21,7 +20,7 @@ export const TabList: React.FC<TabListProps> = ({ children, activeTabIndex = 0 }
   );
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex flex-col">
       <nav className="mb-3">
         <ul className="flex justify-center" role="tablist">
           {tabs.map((tab, index) => (
@@ -38,7 +37,7 @@ export const TabList: React.FC<TabListProps> = ({ children, activeTabIndex = 0 }
           ))}
         </ul>
       </nav>
-      <div>
+      <div className="w-full h-full">
         {tabs[activeTab]} {/* Отображение контента активного таба */}
       </div>
     </div>
