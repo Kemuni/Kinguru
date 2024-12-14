@@ -1,7 +1,7 @@
 import csv
 import random
 from math import ceil
-from typing import List, Optional, Annotated
+from typing import List, Optional, Annotated, Union
 
 import httpx
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Response, Depends
@@ -89,11 +89,9 @@ async def create_movie(session: SessionDepends, movie_data: Annotated[MovieCreat
 
 @router.post(
     "/api/movies/by_csv/",
-    # TODO изменить описание, добавив необходимые поля (Вынести в отдельную константу список)
     description='В файле необходимо указать такие поля как "title", "genre", "description", "year", "rating" и'
                 ' "image_url". Разделитель ";".',
     response_model=MoviesFileUploadAnswer,
-    deprecated=True,
     dependencies=[Depends(current_active_user)],
 )
 async def upload_movies(session: SessionDepends, file: UploadFile = File(...)):
@@ -121,7 +119,8 @@ async def upload_movies(session: SessionDepends, file: UploadFile = File(...)):
 
     session.bulk_insert_mappings(Movie, movies_data)
     session.commit()
-    return MoviesFileUploadAnswer(message="Фильмы успешно загружены", content_amount = len(movies_data))
+    return Response(content="Фильмы успешно добавлены.")
+
 
 
 @router.get("/api/genres/")
@@ -205,7 +204,7 @@ def get_movies_recommendations(
 )
 def get_movies_image(poster_path: str) -> Response:
     if not any(poster_path.endswith(i) for i in [".jpg", ".jpeg", ".png"]):
-        raise HTTPException(status_code=404, detail="Не��ерный формат пути постера. Постер не найден.")
+        raise HTTPException(status_code=404, detail="Неверный формат пути постера. Постер не найден.")
 
     try:
         response = httpx.get(f"https://image.tmdb.org/t/p/original/{poster_path}")
@@ -216,44 +215,48 @@ def get_movies_image(poster_path: str) -> Response:
 
 
 @router.get(
-    "/api/genres/top/", 
-    description="Возвращает топ-3 самых используемых жанра с процентами использования",
-    response_model=list[GenreUsage]
+    "/api/stats/", 
+    description="Возвращает статистику использования жанров с процентами и количеством фильмов",
+    response_model=dict[str, Union[int, list[GenreUsage]]]
 )
-def get_top_genres(session: SessionDepends):
-    # Получаем общее количество фильмов
+def get_top_genres(session: SessionDepends, limit: int = 5):
     total_movies = session.exec(select(count(Movie.id))).first()
     
     if total_movies == 0:
-        return []
+        return {
+            "total_movies": 0,
+            "genres": []
+        }
+        
     percentage_calc = (count(GenreMovieLink.movie_id) * 100.0 / total_movies).label("percentage")
+    movies_count = count(GenreMovieLink.movie_id).label("movies_count")
     
     query = (
         select(
             Genre.name,
-            percentage_calc
+            percentage_calc,
+            movies_count
         )
         .join(GenreMovieLink)
         .group_by(Genre.name)
         .order_by(desc(percentage_calc))
-        .limit(3)
     )
+    
+    if limit > 0:
+        query = query.limit(limit)
     
     results = session.exec(query).all()
     
-    return [
-        {
-            "name": name,
-            "percentage": round(percentage, 2)
-        }
-        for name, percentage in results
-    ]
+    return {
+        "total_movies": total_movies,
+        "genres": [
+            GenreUsage(
+                name=name,
+                percentage=round(percentage, 2),
+                movies_count=count
+            )
+            for name, percentage, count in results
+        ]
+    }
 
 
-@router.get(
-    "/api/movies/count/",
-    description="Возвращает общее количество фильмов в базе данных",
-    response_model=int
-)
-def get_movies_count(session: SessionDepends):
-    return session.exec(select(count(Movie.id))).first()
