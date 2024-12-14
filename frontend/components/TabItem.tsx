@@ -1,6 +1,6 @@
 import React, {ReactNode} from "react";
 
-export interface TabItemProps extends React.HTMLProps<any> {
+export interface TabItemProps extends React.ComponentProps<"div"> {
   label: string;
   children: ReactNode;
 }
