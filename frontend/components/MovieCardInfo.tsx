@@ -20,18 +20,17 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
 
   useEffect(() => {
     setPosterLoading(true);
+    setDescriptionExpanded(false);
   }, [movie])
 
   if (movie === undefined) return <MovieCardSkeleton/>
   return (
     <TabList activeTabIndex={0}>
-      <TabItem label="О сериале">
-
-        <div className="flex flex-col gap-2 w-full overflow-y-scroll h-[500px]"
+      <TabItem label="О фильме" className="w-full h-full relative">
+        <div className="flex flex-col gap-1 w-full overflow-y-scroll absolute top-0 bottom-0 left-0"
              style={{scrollbarWidth: "none" }}
         >
-
-          <div className="relative w-full flex-grow max-h-[52dvh] sm:max-h-[55dvh] aspect-2/3">
+          <div className="relative w-full flex-grow max-h-[60dvh] sm:max-h-[55dvh] aspect-2/3">
             <Image fill
                  sizes="100%"
                  className="object-cover rounded-xl"
@@ -57,7 +56,7 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
               <span className="text-[var(--additional-green)] font-[family-name:var(--font-subheader)] font-bold">
                 {
                   movie.ratings.find(rating => rating.source === "imdb")?.vote_average.toFixed(1)
-                  && movie.ratings[0]?.vote_average.toFixed(1)
+                  ?? movie.ratings[0]?.vote_average.toFixed(1)
                 }
               </span>
               <span>
@@ -70,7 +69,7 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
             </div>
           </div>
           <span
-            className="text-left w-full font-[family-name:var(--font-subheader)] text-3xl"
+            className="text-left w-full font-[family-name:var(--font-subheader)] text-3xl mb-1"
           >
             { movie.ru_title }
           </span>
@@ -89,8 +88,8 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
           </div>
         </div>
       </TabItem>
-      <TabItem label="Детали">
-        <div className="flex flex-col gap-2 rounded-lg overflow-y-scroll scrollbar h-[500px]">
+      <TabItem label="Детали" className="w-full h-full relative">
+        <div className="flex flex-col gap-2 rounded-lg overflow-y-scroll scrollbar absolute top-0 bottom-0 left-0">
           <div className="text-center">
             <span
               className="w-full font-[family-name:var(--font-subheader)] text-3xl"
@@ -98,7 +97,7 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
               { movie.ru_title }
             </span>
           </div>
-          <div className="mt-3 mx-7 flex flex-col gap-4">
+          <div className="mt-2 mx-4 flex flex-col gap-4">
             <div className="flex flex-row items-left justify-left gap-6">
               {
                 movie.ratings.map((rating, index) => (
@@ -160,7 +159,7 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
 const MovieCardSkeleton: FC = () => {
   return (
     <TabList activeTabIndex={0}>
-      <TabItem label="О сериале">
+      <TabItem label="О фильме">
         <div className="flex flex-col gap-2 w-full h-full animate-pulse">
           <div className="relative w-full flex-grow max-h-[48dvh] sm:max-h-[46dvh] aspect-2/3">
             <Image fill
@@ -206,7 +205,7 @@ const MovieCardSkeleton: FC = () => {
               <p className="h-10 bg-gray-500 rounded w-3/4 text-center"></p>
             </span>
           </div>
-          <div className="mt-3 mx-7 flex flex-col gap-4">
+          <div className="mt-2 mx-4 flex flex-col gap-4">
             <div className="flex flex-row items-left justify-left gap-6">
               <div className="h-20 bg-gray-500 rounded w-1/3"></div>
               <div className="h-20 bg-gray-500 rounded w-1/3"></div>
