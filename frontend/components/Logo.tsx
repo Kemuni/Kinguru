@@ -12,7 +12,7 @@ interface LogoProps {
 
 const Logo: React.FC<LogoProps> = ({ size = logoSizes[0] }) => {
   const textClass = (size == "xl" ? "text-6xl" : "text-5xl");
-  const logoSize = (size == "xl"? 64 : 48)
+  const logoSize = (size == "xl" ? 64 : 48)
   const kangarooMargin = (size == "xl"? "0 -1.5rem" : "0 -1.25rem")
 
   return (

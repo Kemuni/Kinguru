@@ -37,3 +37,16 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+
+.scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: var(--native-bg-color);
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: var(--native-hint-color);
+  border-radius: 10px;
+}

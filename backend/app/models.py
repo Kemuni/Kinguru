@@ -1,28 +1,36 @@
 from datetime import date
 from typing import Optional, Annotated, Generic, TypeVar
 
+from fastapi_users import schemas
+from fastapi_users.db import SQLAlchemyBaseUserTable
 from pydantic import field_validator, PlainSerializer, BaseModel
-from sqlalchemy import Text, Date
+from sqlalchemy import Text, Date, Integer
+from sqlalchemy.orm import declarative_base, Mapped, mapped_column
 from sqlmodel import Field, SQLModel, Relationship
+
+
+Base = declarative_base()
+SQLModel.metadata = Base.metadata
 
 
 class DefaultAnswer(SQLModel):
     message: str
 
 
-class UserBase(SQLModel):
-    username: str = Field(unique=True)
-    is_admin: bool = Field(default=False)
+class User(SQLAlchemyBaseUserTable[int], Base):
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
 
-class User(UserBase, table=True):
-    id: int = Field(primary_key=True)
-    password: str
+class UserCreate(schemas.BaseUserCreate):
+    pass
 
 
-class UsersPublic(SQLModel):
-    items: list[UserBase]
-    count: int
+class UserRead(schemas.BaseUser[int]):
+    pass
+
+
+class UserUpdate(schemas.BaseUserUpdate):
+    pass
 
 
 class MoviesFileUploadAnswer(DefaultAnswer):
@@ -48,7 +56,7 @@ class MovieBase(SQLModel):
     imdb_id: str = Field(max_length=16)
     tmdb_id: int
     ru_title: str = Field(max_length=255)
-    en_title: str = Field(max_length=255)
+    en_title: Optional[str] = Field(default=None, max_length=255)
     original_title: str = Field(max_length=255)
     description: str
     image_path: str = Field(max_length=255)
