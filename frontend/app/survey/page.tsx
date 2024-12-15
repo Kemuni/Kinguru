@@ -18,7 +18,7 @@ export default function Survey() {
           <Logo size="lg"/>
         </div>
       </header>
-      <div className="w-full flex-grow overflow-hidden">
+      <div className="w-full flex-grow">
         <MovieRateCard />
       </div>
     </div>
