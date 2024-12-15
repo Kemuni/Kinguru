@@ -9,7 +9,7 @@ import {useGetRandomMovieListItems} from "@/hooks/movie";
 import {Movie} from "@/types/Movie";
 import {MovieCardInfo} from "@/components/MovieCardInfo";
 import {useRouter} from "next/navigation";
-import {SwipeEventData, useSwipeable} from "react-swipeable";
+import {SwipeEventData, useSwipeable} from 'react-swipeable';
 
 
 enum MovieActionType {
@@ -93,7 +93,7 @@ export const MovieRateCard: FC = () => {
   }
 
   function handleSwiping(e: SwipeEventData) {
-    let degree: number = Math.min(Math.ceil(e.absX / 15), MAX_CARD_DEGREE);
+    const degree: number = Math.min(Math.ceil(e.absX / 15), MAX_CARD_DEGREE);
     setCardDegree(degree * (e.dir == "Right" ? 1 : -1));
   }
 
