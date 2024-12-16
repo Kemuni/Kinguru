@@ -185,44 +185,6 @@ class ModelsPaginatedPublic(ModelsPublic[Schema], Generic[Schema]):
     pager: Pager
 
 
-class MovieCreate(MovieBase):
-    genres: list[str] = Field(description="Список названий жанров")
-    countries: list[str] = Field(description="Список названий стран")
-    directors: list[str] = Field(description="Список имен режиссеров")
-    ratings: list[RatingBase] = Field(description="Список рейтингов")
-
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "imdb_id": "tt0111161",
-                "tmdb_id": 278,
-                "ru_title": "Побег из Шоушенка",
-                "en_title": "The Shawshank Redemption",
-                "original_title": "The Shawshank Redemption",
-                "description": "Банкир Энди Дюфрейн обвинён в убийстве собственной жены и её любовника.",
-                "image_path": "/9O7gLzmreU0nGkIB6K3BsJbzvNv.jpg",
-                "release_date": "1994-09-23",
-                "duration": 142,
-                "genres": ["Драма"],
-                "countries": ["США"],
-                "directors": ["Фрэнк Дарабонт"],
-                "ratings": [
-                    {
-                        "source": "TMDB",
-                        "vote_average": 8.7,
-                        "vote_count": 24532
-                    }
-                ]
-            }
-        }
-
-    @field_validator('image_path')
-    def val_image_url(cls, value: str) -> Optional[str]:
-        assert value.startswith("/")
-        assert any(value.endswith(file_extension) for file_extension in [".png", ".jpg"])
-        return value
-
-
 class GenreUsage(BaseModel):
     name: str
     percentage: float
