@@ -40,7 +40,7 @@ export default async function SurveyResults(props: {searchParams: { [key: string
           <Logo size="lg"/>
         </div>
       </header>
-      <div className="w-full flex-grow overflow-hidden">
+      <div className="w-full flex-grow">
         {
           surveyResults !== null
           ? <MovieReviewCard
