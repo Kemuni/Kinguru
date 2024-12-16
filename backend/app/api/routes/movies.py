@@ -1,7 +1,7 @@
 import csv
 import random
 from math import ceil
-from typing import List, Optional, Annotated
+from typing import List, Optional, Annotated, Union
 
 import httpx
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Response, Depends
@@ -9,12 +9,13 @@ from fastapi.params import Body
 from pydantic import ValidationError
 from sqlalchemy.sql.functions import count
 from sqlmodel import select, or_
+from sqlalchemy.sql import desc
 
 from app.api.dependencies import SessionDepends, current_active_user
 from app.crud import get_recommended_movies
 from app.models import (
     Movie, MovieCreate, MoviesFileUploadAnswer, DefaultAnswer, Genre, Pager, ModelsPaginatedPublic, ModelsPublic,
-    MoviePublic
+    MoviePublic, Country, Director, Rating, GenreMovieLink, GenreUsage
 )
 
 router = APIRouter()
@@ -27,8 +28,60 @@ router = APIRouter()
     dependencies=[Depends(current_active_user)],
 )
 async def create_movie(session: SessionDepends, movie_data: Annotated[MovieCreate, Form()]):
-    movie = Movie.model_validate(movie_data)
+    genres = []
+    genre_names = [name.strip() for name in movie_data.genres.split(',') if name.strip()]
+    for genre_name in genre_names:
+        genre = session.exec(select(Genre).where(Genre.name == genre_name)).first()
+        if not genre:
+            genre = Genre(name=genre_name)
+            session.add(genre)
+        genres.append(genre)
+
+    countries = []
+    country_names = [name.strip() for name in movie_data.countries.split(',') if name.strip()]
+    for country_name in country_names:
+        country = session.exec(select(Country).where(Country.name == country_name)).first()
+        if not country:
+            country = Country(name=country_name)
+            session.add(country)
+        countries.append(country)
+
+    directors = []
+    director_names = [name.strip() for name in movie_data.directors.split(',') if name.strip()]
+    for director_name in director_names:
+        director = session.exec(select(Director).where(Director.full_name == director_name)).first()
+        if not director:
+            director = Director(full_name=director_name)
+            session.add(director)
+        directors.append(director)
+    
+    movie = Movie(
+        imdb_id=movie_data.imdb_id,
+        tmdb_id=movie_data.tmdb_id,
+        ru_title=movie_data.ru_title,
+        en_title=movie_data.en_title,
+        original_title=movie_data.original_title,
+        description=movie_data.description,
+        image_path=movie_data.image_path,
+        release_date=movie_data.release_date,
+        duration=movie_data.duration,
+        genres=genres,
+        countries=countries,
+        directors=directors
+    )
+    
     session.add(movie)
+    session.flush()
+
+    for rating_data in movie_data.ratings:
+        rating = Rating(
+            source=rating_data.source,
+            vote_average=rating_data.vote_average,
+            vote_count=rating_data.vote_count,
+            movie_id=movie.id
+        )
+        session.add(rating)
+    
     session.commit()
     session.refresh(movie)
     return movie
@@ -36,11 +89,9 @@ async def create_movie(session: SessionDepends, movie_data: Annotated[MovieCreat
 
 @router.post(
     "/api/movies/by_csv/",
-    # TODO изменить описание, добавив необходимые поля (Вынести в отдельную константу список)
     description='В файле необходимо указать такие поля как "title", "genre", "description", "year", "rating" и'
                 ' "image_url". Разделитель ";".',
     response_model=MoviesFileUploadAnswer,
-    deprecated=True,
     dependencies=[Depends(current_active_user)],
 )
 async def upload_movies(session: SessionDepends, file: UploadFile = File(...)):
@@ -68,7 +119,8 @@ async def upload_movies(session: SessionDepends, file: UploadFile = File(...)):
 
     session.bulk_insert_mappings(Movie, movies_data)
     session.commit()
-    return MoviesFileUploadAnswer(message="Фильмы успешно загружены", content_amount = len(movies_data))
+    return Response(content="Фильмы успешно добавлены.")
+
 
 
 @router.get("/api/genres/")
@@ -109,6 +161,17 @@ def get_movies(
             current_page=page,
             pages_count=ceil(movies_amount/page_size)),
     )
+
+
+@router.get("/api/movies/{movie_id}")
+def get_movie(
+        session: SessionDepends,
+        movie_id: int,
+) -> MoviePublic:
+    movie = session.get(Movie, movie_id)
+    if not movie:
+        raise HTTPException(status_code=404, detail="Фильм не найден")
+    return movie
 
 
 @router.delete(
@@ -160,3 +223,51 @@ def get_movies_image(poster_path: str) -> Response:
     except httpx.HTTPError:
         raise HTTPException(status_code=500, detail="В данный момент сервис недоступен. Невозможно получить постер.")
     return Response(content=response.content, media_type="image/jpg")
+
+
+@router.get(
+    "/api/stats/", 
+    description="Возвращает статистику использования жанров с процентами и количеством фильмов",
+    response_model=dict[str, Union[int, list[GenreUsage]]]
+)
+def get_top_genres(session: SessionDepends, limit: int = 5):
+    total_movies = session.exec(select(count(Movie.id))).first()
+    
+    if total_movies == 0:
+        return {
+            "total_movies": 0,
+            "genres": []
+        }
+        
+    percentage_calc = (count(GenreMovieLink.movie_id) * 100.0 / total_movies).label("percentage")
+    movies_count = count(GenreMovieLink.movie_id).label("movies_count")
+    
+    query = (
+        select(
+            Genre.name,
+            percentage_calc,
+            movies_count
+        )
+        .join(GenreMovieLink)
+        .group_by(Genre.name)
+        .order_by(desc(percentage_calc))
+    )
+    
+    if limit > 0:
+        query = query.limit(limit)
+    
+    results = session.exec(query).all()
+    
+    return {
+        "total_movies": total_movies,
+        "genres": [
+            GenreUsage(
+                name=name,
+                percentage=round(percentage, 2),
+                movies_count=count
+            )
+            for name, percentage, count in results
+        ]
+    }
+
+
