@@ -111,6 +111,17 @@ def get_movies(
     )
 
 
+@router.get("/api/movies/{movie_id}")
+def get_movie(
+        session: SessionDepends,
+        movie_id: int,
+) -> MoviePublic:
+    movie = session.get(Movie, movie_id)
+    if not movie:
+        raise HTTPException(status_code=404, detail="Фильм не найден")
+    return movie
+
+
 @router.delete(
     "/api/movies/{content_id}/",
     response_model=DefaultAnswer,
