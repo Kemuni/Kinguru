@@ -24,8 +24,8 @@ const SwipeCardWrapper: React.FC<SwipeWrapperProps> = (
     canSwipeRight = () => true,
     onLeftSwipe = undefined,
     onRightSwipe = undefined,
-    maxRotateDegree = 25,
-    minDeltaTODispatch = 165,
+    maxRotateDegree = 3,
+    minDeltaTODispatch = 110,
     className, style, children
   }
 ) =>
@@ -33,17 +33,21 @@ const SwipeCardWrapper: React.FC<SwipeWrapperProps> = (
   const [ cardDegree, setCardDegree ] = useState<number>(0);
 
   function handleLeftSlide(e: SwipeEventData) {
+    setCardDegree(0);
     if (onLeftSwipe && canSwipeLeft() && e.absX >= minDeltaTODispatch)
       onLeftSwipe(e);
   }
 
   function handleRightSlide(e: SwipeEventData) {
+    setCardDegree(0);
     if (onRightSwipe && canSwipeRight() && e.absX >= minDeltaTODispatch)
       onRightSwipe(e)
   }
 
   function handleSwiping(e: SwipeEventData) {
-    const degree: number = Math.min(Math.ceil(e.absX / 15), maxRotateDegree);
+    console.log("SWIPING")
+    if (e.absX < 15) return;
+    const degree: number = Math.min(Math.ceil(e.absX / 40), maxRotateDegree);
     if (e.dir == "Right") {
       if (canSwipeRight()) setCardDegree(degree);
     }
@@ -54,16 +58,17 @@ const SwipeCardWrapper: React.FC<SwipeWrapperProps> = (
     onSwipedLeft: handleLeftSlide,
     onSwipedRight: handleRightSlide,
     onSwiped: () => setCardDegree(0),
+    onTouchEndOrOnMouseUp: () => setCardDegree(0),
     onSwiping: handleSwiping,
     delta: 1,
-    preventScrollOnSwipe: true,
     trackMouse: true,
   });
 
   const swipeStyles = {
+    transition: "0.1s",
     transform: `
-    translate(${cardDegree / 3}px, ${Math.abs(cardDegree) / 5}px) 
-    rotate(${cardDegree / maxRotateDegree}deg)
+    translate(${cardDegree}px, ${Math.abs(cardDegree)}px) 
+    rotate(${cardDegree}deg)
   `,
     boxShadow: "",
   }

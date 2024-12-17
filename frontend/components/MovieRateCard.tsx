@@ -81,13 +81,13 @@ export const MovieRateCard: FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-dvh max-h-dvh items-center justify-center gap-1">
+    <div className="flex flex-col h-dvh max-h-dvh items-center justify-center gap-1 overflow-hidden">
       <div
-        className="grid grid-cols-[48px_1fr_48px] w-full items-center justify-center gap-3 px-4 my-2"
+        className="grid grid-cols-[32px_1fr_32px] w-full items-center justify-center gap-3 px-4 my-2"
       >
-        <Link href="/" style={{height: "48px"}}>
+        <Link href="/" style={{height: "32px"}}>
           <Button variant="dark" size="icon_auto">
-            <Image width={48} height={48} src={ChevronIco} alt="Back"/>
+            <Image width={32} height={32} src={ChevronIco} alt="Back"/>
           </Button>
         </Link>
         <h2 className="text-center font-[family-name:var(--font-subheader)] text-2xl">
@@ -96,30 +96,30 @@ export const MovieRateCard: FC = () => {
         <Logo size="sm" aria-label="Назад"/>
       </div>
       <SwipeCardWrapper
-        className="w-full h-full rounded-t-3xl"
+        className="w-full h-full rounded-t-3xl overflow-hidden"
         onLeftSwipe={() => handleRateClick(MovieActionType.DISLIKE)}
         onRightSwipe={() => handleRateClick(MovieActionType.LIKE)}
         useColorLight={true}
       >
         <div
           className="bg-[var(--native-bg-color)] rounded-t-3xl w-full h-full flex flex-col justify-between
-            items-center gap-2 py-3 px-4 ring-2 ring-[var(--native-secondary-bg-color)] transition-transform">
+            items-center gap-2 py-3 px-6 sm:px-3 ring-2 ring-[var(--native-secondary-bg-color)] transition-transform">
           <div className="w-full flex-grow px-2 lg:px-3 overflow-hidden">
             <MovieCardInfo movie={currentMovie}/>
           </div>
-          <div className="h-fit w-full flex-shrink-0">
-            <div className="flex flex-row justify-around mb-2 lg:mb-0">
+          <div className="h-fit w-full flex-shrink-0 hidden sm:block">
+            <div className="flex flex-row justify-around mb-3 lg:mb-0">
               <Button
                 variant="secondary_dark" size="icon_auto" className="rounded-full p-2 drop-shadow-md"
                 onClick={() => handleRateClick(MovieActionType.DISLIKE)}
               >
-                <Image width={58} height={58} src={CancelIco} alt="Back"/>
+                <Image width={48} height={48} src={CancelIco} alt="Back"/>
               </Button>
               <Button
                 variant="secondary_dark" size="icon_auto" className="rounded-full p-2 drop-shadow-md"
                 onClick={() => handleRateClick(MovieActionType.LIKE)}
               >
-                <Image width={58} height={58} src={HeartIco} alt="Back"/>
+                <Image width={48} height={48} src={HeartIco} alt="Back"/>
               </Button>
             </div>
           </div>

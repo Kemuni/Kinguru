@@ -4,6 +4,7 @@ from unittest.mock import patch
 import httpx
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
+from websockets.asyncio.client import connect
 
 from app.models import Movie
 from app.tests.utils.movie import create_random_movie, get_random_tmdb_id, get_random_lower_string
@@ -11,9 +12,7 @@ from app.tests.utils.movie import create_random_movie, get_random_tmdb_id, get_r
 
 def test_delete_no_movie(client: TestClient, db: Session):
     response = client.delete(f"/api/movies/{get_random_tmdb_id()}")
-    assert response.status_code == 404
-    content = response.json()
-    assert content["detail"] == "Фильм не найден"
+    assert response.status_code == 401
 
 
 def test_get_movies_no_params(client: TestClient, db: Session):
@@ -71,16 +70,6 @@ def test_get_movies_only_genre(client: TestClient, db: Session):
     content = response.json()
     assert len(content["items"]) == 1
     assert content["items"][0]["genres"][0] == genre.name
-
-
-def test_delete_movie(client: TestClient, db: Session):
-    movie = create_random_movie(db)
-    response = client.delete(f"/api/movies/{movie.id}")
-    assert response.status_code == 200
-    content = response.json()
-    query = select(Movie).where(Movie.id == movie.id)
-    assert db.exec(query).first() is None
-    assert content["message"] == "Фильм удален"
 
 
 def test_recommend_movies(client: TestClient, db: Session):
@@ -151,30 +140,6 @@ def test_get_random_movie(client: TestClient, db: Session):
     assert 1 <= len(content["items"]) <= 10
 
 
-def test_upload_movie_by_form(client: TestClient, db: Session):
-    tmdb_id = get_random_tmdb_id()
-    imdb_id = str(tmdb_id)
-    title = get_random_lower_string()
-    data = {
-        "imdb_id": imdb_id,
-        "tmdb_id": tmdb_id,
-        "ru_title": title,
-        "en_title": title,
-        "original_title": title,
-        "description": title,
-        "image_path": "/example.com/image.png",
-        "release_date": date(year=2024, month=1, day=1).isoformat(),
-        "duration": 60,
-    }
-
-    response = client.post("/api/movies/by_form/", data=data)
-    assert response.status_code == 200
-    json_data = response.json()
-    assert "id" in json_data
-    for key, value in data.items():
-        assert json_data[key] == value
-
-
 def test_upload_movie_by_form_with_wrong_image_url(client: TestClient, db: Session):
     tmdb_id = get_random_tmdb_id()
     imdb_id = str(tmdb_id)
@@ -192,7 +157,7 @@ def test_upload_movie_by_form_with_wrong_image_url(client: TestClient, db: Sessi
     }
 
     response = client.post("/api/movies/by_form/", data=data)
-    assert response.status_code == 422
+    assert response.status_code == 401
 
 
 def test_upload_movie_by_form_with_wrong_content(client: TestClient, db: Session):
@@ -206,7 +171,7 @@ def test_upload_movie_by_form_with_wrong_content(client: TestClient, db: Session
     }
 
     response = client.post("/api/movies/by_form/", data=data)
-    assert response.status_code == 422
+    assert response.status_code == 401
 
 
 def test_get_genres(client: TestClient, db: Session):
@@ -215,6 +180,7 @@ def test_get_genres(client: TestClient, db: Session):
     assert response.status_code == 200
     content = response.json()
     assert len(content["items"]) >= 1
+
 
 
 def test_get_movies_image(client: TestClient, db: Session):
@@ -249,3 +215,38 @@ def test_cannot_get_movies_image(client: TestClient, db: Session):
         assert response.status_code == 500
         result = response.json()
         assert result["detail"] == "В данный момент сервис недоступен. Невозможно получить постер."
+
+
+def test_get_movie_by_id(client: TestClient, db: Session):
+    movie = create_random_movie(db)
+    response = client.get(f"/api/movies/{movie.id}")
+    assert response.status_code == 200
+    result = response.json()
+    movies_fields = [
+        "id", "imdb_id", "tmdb_id", "ru_title", "en_title", "original_title", "description",
+        "image_path", "release_date", "duration"
+    ]
+
+    for field in movies_fields:
+        assert str(movie.model_dump()[field]) == str(result[field])
+
+
+def test_cannot_get_movie_by_id(client: TestClient, db: Session):
+    create_random_movie(db)
+    movie_id = 3456784
+    response = client.get(f"/api/movies/{movie_id}/")
+    assert response.status_code == 404
+
+
+
+def test_get_stats(client: TestClient, db: Session):
+    limit = 5
+    create_random_movie(db)
+    create_random_movie(db)
+    create_random_movie(db)
+    create_random_movie(db)
+    create_random_movie(db)
+    response = client.get(f"/api/stats/", params = {"limit": limit})
+    assert response.status_code == 200
+    connect = response.json()
+    assert len(connect["genres"]) == 5

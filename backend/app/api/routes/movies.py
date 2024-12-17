@@ -152,7 +152,7 @@ def get_movies(
         )
 
     movies = session.exec(query.offset(offset).limit(page_size)).all()
-    movies_amount = session.exec(query.with_only_columns(count())).first()
+    movies_amount = session.exec(select(count()).select_from(query.subquery())).first()
     return ModelsPaginatedPublic(
         items=movies,
         pager=Pager(

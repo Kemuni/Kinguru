@@ -4,7 +4,7 @@ import Image from "next/image";
 import PosterPlaceholder from "@/public/static/images/poster_loading_placeholder.png";
 import {TabList} from "@/components/TabList";
 import {TabItem} from "@/components/TabItem";
-import {FC, useEffect, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import {Movie} from "@/types/Movie";
 import {APIEndpointsUrls, baseURL} from "@/services/api-urls";
 
@@ -28,27 +28,27 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
     <TabList activeTabIndex={0}>
       <TabItem label="О фильме" className="w-full h-full relative">
         <div className="flex flex-col gap-1 w-full overflow-y-scroll absolute top-0 bottom-0 left-0"
-             style={{scrollbarWidth: "none" }}
+             style={{scrollbarWidth: "none"}}
         >
           <div className="relative flex-grow-0 aspect-2/3">
             <Image
-                 width="0"
-                 height="0"
-                 sizes="100vw"
-                 className="object-cover rounded-xl w-full h-auto aspect-2/3"
-                 style={isPosterLoading ? {display: "none"} : {}}
-                 onLoad={() => setPosterLoading(false)}
-                 src={`${baseURL}/${APIEndpointsUrls.MoviePoster}${movie.image_path}`}
-                 priority={true}
-                 alt="Content image"/>
+              width="0"
+              height="0"
+              sizes="100vw"
+              className="object-cover rounded-xl w-full h-auto aspect-2/3"
+              style={isPosterLoading ? {display: "none"} : {}}
+              onLoad={() => setPosterLoading(false)}
+              src={`${baseURL}/${APIEndpointsUrls.MoviePoster}${movie.image_path}`}
+              priority={true}
+              alt="Content image"/>
             {
               isPosterLoading
-              ? <Image fill
-                       sizes="100%"
-                       className="object-cover rounded-xl asp"
-                       src={PosterPlaceholder}
-                       alt="Content image"/>
-              : null
+                ? <Image fill
+                         sizes="100%"
+                         className="object-cover rounded-xl asp"
+                         src={PosterPlaceholder}
+                         alt="Content image"/>
+                : null
             }
           </div>
           <div
@@ -66,23 +66,23 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
               </span>
             </div>
             <div className="flex">
-              { `${Math.floor(movie.duration / 60)} ч ` }
-              { movie.duration % 60 != 0 && `${movie.duration % 60}м` }
+              {`${Math.floor(movie.duration / 60)} ч `}
+              {movie.duration % 60 != 0 && `${movie.duration % 60}м`}
             </div>
           </div>
           <span
             className="text-left w-full font-[family-name:var(--font-subheader)] text-3xl mb-1"
           >
-            { movie.ru_title }
+            {movie.ru_title}
           </span>
           <div className="flex flex-row flex-wrap justify-start items-start w-full gap-2
                               font-[family-name:var(--font-text)] text-[var(--native-hint-color)] text-sm">
             {
               movie.genres.map((genreName) => (
                   <div
-                    key={ genreName }
+                    key={genreName}
                     className="bg-[var(--native-secondary-bg-color)] px-2 py-0.5 rounded-full">
-                    { genreName }
+                    {genreName}
                   </div>
                 )
               )
@@ -96,27 +96,27 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
             <span
               className="w-full font-[family-name:var(--font-subheader)] text-3xl"
             >
-              { movie.ru_title }
+              {movie.ru_title}
             </span>
           </div>
           <div className="mt-2 mx-4 flex flex-col gap-4">
             <div className="flex flex-row items-left justify-left gap-6">
               {
                 movie.ratings.map((rating, index) => (
-                    <div key={index}
-                         className="flex flex-col items-end px-3 py-0.5 rounded-lg bg-[var(--native-secondary-bg-color)]
+                  <div key={index}
+                       className="flex flex-col items-end px-3 py-0.5 rounded-lg bg-[var(--native-secondary-bg-color)]
                        justify-start text-lg"
-                    >
-                      <div className="w-full font-semibold">
-                        {rating.source.charAt(0).toUpperCase() + rating.source.slice(1)}
-                      </div>
-                      <span className="text-[var(--native-secondary-text-color)] text-base">
+                  >
+                    <div className="w-full font-semibold">
+                      {rating.source.charAt(0).toUpperCase() + rating.source.slice(1)}
+                    </div>
+                    <span className="text-[var(--native-secondary-text-color)] text-base">
                         <span className="font-semibold text-[var(--native-text-color)] text-xl ps-3">
                           {rating.vote_average.toFixed(2)}
                         </span>
-                        {" "}из 10
+                      {" "}из 10
                       </span>
-                    </div>
+                  </div>
                 ))
               }
             </div>
@@ -131,10 +131,10 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
               {
                 movie.countries.length ?
                   <div className="flex flex-row items-center justify-start gap-2 w-full">
-                      <span className="w-1/2 text-[var(--native-secondary-text-color)]">Страна:</span>
-                      <span className="w-1/2">{movie.countries.join(', ')}</span>
+                    <span className="w-1/2 text-[var(--native-secondary-text-color)]">Страна:</span>
+                    <span className="w-1/2">{movie.countries.join(', ')}</span>
                   </div>
-                : null
+                  : null
               }
               {
                 movie.release_date.length ?
@@ -142,7 +142,7 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
                     <span className="w-1/2 text-[var(--native-secondary-text-color)]">Год выпуска:</span>
                     <span className="w-1/2">{movie.release_date.substring(0, 4)}</span>
                   </div>
-                : null
+                  : null
               }
               {
                 movie.directors.length ?
@@ -152,7 +152,7 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
                     </span>
                     <span className="w-1/2">{movie.directors.join(', ')}</span>
                   </div>
-                : null
+                  : null
               }
               {
                 movie.duration ?
@@ -160,7 +160,7 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
                     <span className="w-1/2 text-[var(--native-secondary-text-color)]">Длительность:</span>
                     <span className="w-1/2">{movie.duration} минуты</span>
                   </div>
-                : null
+                  : null
               }
               <div>
                 <a href="mailto:support@kino-gu.ru">Нашли ошибку? <span className="text-[var(--native-focus-color)]">Сообщите нам</span></a>
