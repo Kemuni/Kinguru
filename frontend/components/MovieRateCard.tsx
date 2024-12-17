@@ -4,11 +4,15 @@ import {Button} from "@/components/Button";
 import Image from "next/image";
 import CancelIco from "@/public/static/icons/cancel.svg";
 import HeartIco from "@/public/static/icons/heart.svg";
+import ChevronIco from "@/public/static/icons/chevron.svg";
 import React, {FC, useEffect, useReducer, useState} from "react";
 import {useGetRandomMovieListItems} from "@/hooks/movie";
 import {Movie} from "@/types/Movie";
 import {MovieCardInfo} from "@/components/MovieCardInfo";
 import {useRouter} from "next/navigation";
+import SwipeCardWrapper from "@/components/SwipeCardWrapper";
+import Link from "next/link";
+import Logo from "@/components/Logo";
 
 
 enum MovieActionType {
@@ -77,31 +81,50 @@ export const MovieRateCard: FC = () => {
   }
 
   return (
-    <div
-      className="bg-[var(--native-bg-color)] rounded-t-3xl w-full h-full flex flex-col justify-between
-        items-center gap-2 py-4 px-3 ring-2 ring-[var(--native-secondary-bg-color)]">
-      <h2 className="text-left w-full font-[family-name:var(--font-subheader)] text-xl">
-        Оцените фильмы: {movieState.movieIndex + 1}/{movies.length == 0 ? 10 : movies.length}
-      </h2>
-      <div className="w-full flex-grow px-2 lg:px-3 overflow-hidden">
-        <MovieCardInfo movie={currentMovie}/>
+    <div className="flex flex-col h-dvh max-h-dvh items-center justify-center gap-1">
+      <div
+        className="grid grid-cols-[48px_1fr_48px] w-full items-center justify-center gap-3 px-4 my-2"
+      >
+        <Link href="/" style={{height: "48px"}}>
+          <Button variant="dark" size="icon_auto">
+            <Image width={48} height={48} src={ChevronIco} alt="Back"/>
+          </Button>
+        </Link>
+        <h2 className="text-center font-[family-name:var(--font-subheader)] text-2xl">
+          {movieState.movieIndex + 1} / {movies.length == 0 ? 10 : movies.length} фильмов
+        </h2>
+        <Logo size="sm" aria-label="Назад"/>
       </div>
-      <div className="h-fit w-full flex-shrink-0">
-        <div className="flex flex-row justify-around mb-4 lg:mb-0">
-          <Button
-            variant="secondary_dark" size="icon_auto" className="rounded-full p-2 drop-shadow-md"
-            onClick={() => handleRateClick(MovieActionType.DISLIKE)}
-          >
-            <Image width={58} height={58} src={CancelIco} alt="Back"/>
-          </Button>
-          <Button
-            variant="secondary_dark" size="icon_auto" className="rounded-full p-2 drop-shadow-md"
-            onClick={() => handleRateClick(MovieActionType.LIKE)}
-          >
-            <Image width={58} height={58} src={HeartIco} alt="Back"/>
-          </Button>
+      <SwipeCardWrapper
+        className="w-full h-full rounded-t-3xl"
+        onLeftSwipe={() => handleRateClick(MovieActionType.DISLIKE)}
+        onRightSwipe={() => handleRateClick(MovieActionType.LIKE)}
+        useColorLight={true}
+      >
+        <div
+          className="bg-[var(--native-bg-color)] rounded-t-3xl w-full h-full flex flex-col justify-between
+            items-center gap-2 py-3 px-4 ring-2 ring-[var(--native-secondary-bg-color)] transition-transform">
+          <div className="w-full flex-grow px-2 lg:px-3 overflow-hidden">
+            <MovieCardInfo movie={currentMovie}/>
+          </div>
+          <div className="h-fit w-full flex-shrink-0">
+            <div className="flex flex-row justify-around mb-2 lg:mb-0">
+              <Button
+                variant="secondary_dark" size="icon_auto" className="rounded-full p-2 drop-shadow-md"
+                onClick={() => handleRateClick(MovieActionType.DISLIKE)}
+              >
+                <Image width={58} height={58} src={CancelIco} alt="Back"/>
+              </Button>
+              <Button
+                variant="secondary_dark" size="icon_auto" className="rounded-full p-2 drop-shadow-md"
+                onClick={() => handleRateClick(MovieActionType.LIKE)}
+              >
+                <Image width={58} height={58} src={HeartIco} alt="Back"/>
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      </SwipeCardWrapper>
     </div>
   );
 }

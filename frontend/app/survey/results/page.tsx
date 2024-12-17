@@ -4,6 +4,7 @@ import Image from "next/image";
 import Logo from "@/components/Logo";
 import Link from "next/link";
 import {MovieReviewCard} from "@/components/MovieReviewCard";
+import React from "react";
 
 interface SurveyResultsQuery {
   likedMovies?: string,
@@ -30,24 +31,27 @@ export default async function SurveyResults(props: {searchParams: { [key: string
 
   return (
     <div className="flex flex-col h-dvh max-h-dvh items-center justify-center gap-1">
-      <header className="grid grid-cols-[48px_1fr] w-full items-center justify-center gap-3 py-0.5 px-4 mx-4 mt-2">
-        <Link href="/">
+      <header
+        className="grid grid-cols-[48px_1fr_48px] w-full items-center justify-center gap-3 px-4 my-2"
+      >
+        <Link href="/" style={{height: "48px"}}>
           <Button variant="dark" size="icon_auto">
             <Image width={48} height={48} src={ChevronIco} alt="Back"/>
           </Button>
         </Link>
-        <div className="w-full pe-16">
-          <Logo size="lg"/>
-        </div>
+        <h2 className="text-center font-[family-name:var(--font-subheader)] text-2xl">
+          Рекомендуем Вам
+        </h2>
+        <Logo size="sm" aria-label="Назад"/>
       </header>
-      <div className="w-full flex-grow overflow-hidden">
+      <div className="w-full flex-grow">
         {
           surveyResults !== null
-          ? <MovieReviewCard
+            ? <MovieReviewCard
               likedMovies={surveyResults.likedMovies}
               dislikedMovies={surveyResults.dislikedMovies}
             />
-          : <h2 className="text-2xl font-[family-name:var(--font-subheader)]">Невозможно получить результаты.</h2>
+            : <h2 className="text-2xl font-[family-name:var(--font-subheader)]">Невозможно получить результаты.</h2>
         }
       </div>
     </div>

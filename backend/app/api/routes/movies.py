@@ -163,7 +163,14 @@ def get_movies(
     )
 
 
-@router.get("/api/movies/{movie_id}")
+@router.get("/api/movies/random/")
+def get_random_movies(session: SessionDepends) -> ModelsPublic[MoviePublic]:
+    movies = session.exec(select(Movie)).all()
+    random_movies = random.sample(movies, min(10, len(movies)))
+    return ModelsPublic(items=random_movies)
+
+
+@router.get("/api/movies/{movie_id}/")
 def get_movie(
         session: SessionDepends,
         movie_id: int,
@@ -186,13 +193,6 @@ def delete_movie(session: SessionDepends, content_id: int):
     session.delete(movie)
     session.commit()
     return DefaultAnswer(message="Фильм удален")
-
-
-@router.get("/api/movies/random/")
-def get_random_movies(session: SessionDepends) -> ModelsPublic[MoviePublic]:
-    movies = session.exec(select(Movie)).all()
-    random_movies = random.sample(movies, min(10, len(movies)))
-    return ModelsPublic(items=random_movies)
 
 
 @router.post("/api/movies/recommendations/")
@@ -269,5 +269,3 @@ def get_top_genres(session: SessionDepends, limit: int = 5):
             for name, percentage, count in results
         ]
     }
-
-
