@@ -30,10 +30,12 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
         <div className="flex flex-col gap-1 w-full overflow-y-scroll absolute top-0 bottom-0 left-0"
              style={{scrollbarWidth: "none" }}
         >
-          <div className="relative w-full flex-grow max-h-[60dvh] sm:max-h-[55dvh] aspect-2/3">
-            <Image fill
-                 sizes="100%"
-                 className="object-cover rounded-xl"
+          <div className="relative flex-grow-0 aspect-2/3">
+            <Image
+                 width="0"
+                 height="0"
+                 sizes="100vw"
+                 className="object-cover rounded-xl w-full h-auto aspect-2/3"
                  style={isPosterLoading ? {display: "none"} : {}}
                  onLoad={() => setPosterLoading(false)}
                  src={`${baseURL}/${APIEndpointsUrls.MoviePoster}${movie.image_path}`}
@@ -126,26 +128,42 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
               </span>
             </div>
             <div className="flex flex-col items-start justify-start gap-2">
-              <div className="flex flex-row items-center justify-start gap-2 w-full">
-                <span className="w-1/2 text-[var(--native-secondary-text-color)]">Страна:</span>
-                <span className="w-1/2">{movie.countries.join(', ')}</span>
-              </div>
-              <div className="flex flex-row items-center justify-start gap-2 w-full">
-                <span className="w-1/2 text-[var(--native-secondary-text-color)]">Год выпуска:</span>
-                <span className="w-1/2">{movie.release_date.substring(0, 4)}</span>
-              </div>
-              <div className="flex flex-row items-center justify-start gap-2 w-full">
-                <span className="w-1/2 text-[var(--native-secondary-text-color)]">
-                  Режиссер{ movie.directors.length > 1 ? "ы" : "" }:
-                </span>
-                <span className="w-1/2">{movie.directors.join(', ')}</span>
-              </div>
-              <div className="flex flex-row items-center justify-start gap-2 w-full">
-                <span className="w-1/2 text-[var(--native-secondary-text-color)]">Длительность:</span>
-                <span className="w-1/2">{movie.duration} минуты</span>
-              </div>
+              {
+                movie.countries.length ?
+                  <div className="flex flex-row items-center justify-start gap-2 w-full">
+                      <span className="w-1/2 text-[var(--native-secondary-text-color)]">Страна:</span>
+                      <span className="w-1/2">{movie.countries.join(', ')}</span>
+                  </div>
+                : null
+              }
+              {
+                movie.release_date.length ?
+                  <div className="flex flex-row items-center justify-start gap-2 w-full">
+                    <span className="w-1/2 text-[var(--native-secondary-text-color)]">Год выпуска:</span>
+                    <span className="w-1/2">{movie.release_date.substring(0, 4)}</span>
+                  </div>
+                : null
+              }
+              {
+                movie.directors.length ?
+                  <div className="flex flex-row items-center justify-start gap-2 w-full">
+                    <span className="w-1/2 text-[var(--native-secondary-text-color)]">
+                      Режиссер{movie.directors.length > 1 ? "ы" : ""}:
+                    </span>
+                    <span className="w-1/2">{movie.directors.join(', ')}</span>
+                  </div>
+                : null
+              }
+              {
+                movie.duration ?
+                  <div className="flex flex-row items-center justify-start gap-2 w-full">
+                    <span className="w-1/2 text-[var(--native-secondary-text-color)]">Длительность:</span>
+                    <span className="w-1/2">{movie.duration} минуты</span>
+                  </div>
+                : null
+              }
               <div>
-                <span>Нашли ошибку? <span className="text-[var(--native-focus-color)]">Сообщите нам</span></span>
+                <a href="mailto:support@kino-gu.ru">Нашли ошибку? <span className="text-[var(--native-focus-color)]">Сообщите нам</span></a>
               </div>
             </div>
           </div>
@@ -161,10 +179,10 @@ const MovieCardSkeleton: FC = () => {
     <TabList activeTabIndex={0}>
       <TabItem label="О фильме">
         <div className="flex flex-col gap-2 w-full h-full animate-pulse">
-          <div className="relative w-full flex-grow max-h-[48dvh] sm:max-h-[46dvh] aspect-2/3">
+          <div className="relative flex-grow-0 aspect-2/3">
             <Image fill
                    sizes="100%"
-                   className="object-cover rounded-xl"
+                   className="object-cover rounded-xl w-full h-full aspect-2/3"
                    src={PosterPlaceholder}
                    alt="Content image"/>
           </div>

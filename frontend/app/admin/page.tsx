@@ -35,7 +35,7 @@ export default function Home() {
                         </div>
                     </div>
                     <div className="flex justify-center">
-                    <Link href={`/survey`} className="w-full">
+                    <Link href={`/admin/menu`} className="w-full">
                         <Button size="lg" className="w-full">Авторизация</Button>
                     </Link>
 
