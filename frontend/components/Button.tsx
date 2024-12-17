@@ -25,6 +25,7 @@ const buttonVariants = cva(
         xl: 'h-12 rounded-xl px-16 text-2xl',
         icon: 'h-10 w-10',
         icon_auto: 'h-auto w-auto',
+        catalog: 'h-6 px-12 py-2 rounded-xl text-xs w-full',
       },
     },
     defaultVariants: {

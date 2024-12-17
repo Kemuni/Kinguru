@@ -25,9 +25,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
+      <head>
+        <title>KinoGuru</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui"/>
+      </head>
       <body
         className={`${lilitaOne.variable} ${libreFranklin.variable} ${inter.variable} antialiased flex justify-center 
-        w-full`}
+        w-full overflow-hidden`}
       >
         <div className="w-full lg:w-[calc(100dvh*0.4)]">
           {children}
