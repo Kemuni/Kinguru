@@ -32,11 +32,11 @@ export default async function SurveyResults(props: {searchParams: { [key: string
   return (
     <div className="flex flex-col h-dvh max-h-dvh items-center justify-center gap-1">
       <header
-        className="grid grid-cols-[48px_1fr_48px] w-full items-center justify-center gap-3 px-4 my-2"
+        className="grid grid-cols-[32px_1fr_32px] w-full items-center justify-center gap-3 px-4 my-2"
       >
-        <Link href="/" style={{height: "48px"}}>
+        <Link href="/" style={{height: "32px"}}>
           <Button variant="dark" size="icon_auto">
-            <Image width={48} height={48} src={ChevronIco} alt="Back"/>
+            <Image width={32} height={32} src={ChevronIco} alt="Back"/>
           </Button>
         </Link>
         <h2 className="text-center font-[family-name:var(--font-subheader)] text-2xl">
@@ -44,7 +44,7 @@ export default async function SurveyResults(props: {searchParams: { [key: string
         </h2>
         <Logo size="sm" aria-label="Назад"/>
       </header>
-      <div className="w-full flex-grow">
+      <div className="w-full flex-grow overflow-hidden">
         {
           surveyResults !== null
             ? <MovieReviewCard
