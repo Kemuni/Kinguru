@@ -40,6 +40,7 @@ body {
 
 .scrollbar::-webkit-scrollbar {
   width: 5px;
+  height: 7px;
 }
 
 .scrollbar::-webkit-scrollbar-track {
@@ -49,4 +50,8 @@ body {
 .scrollbar::-webkit-scrollbar-thumb {
   background: var(--native-hint-color);
   border-radius: 10px;
+}
+
+#csv-file{
+  display: none;
 }
