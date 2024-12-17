@@ -9,6 +9,18 @@ interface MoviesItemsResponse {
   items: Movie[]
 }
 
+interface PagerResponse {
+  total_elements: number,
+  currentPage: number,
+  page_size: number,
+  pages_count: number;
+}
+
+interface MoviesPaginatedItemsResponse {
+  items: Movie[],
+  pager: PagerResponse;
+}
+
 
 export const useGetRandomMovieListItems = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -104,4 +116,39 @@ export const useGetMovieById = (id: number) => {
   }, []);
 
   return { movie, isLoading, error };
+}
+
+
+export const useGetMovieAndPagesListItems = (currentPage: number) =>{
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [data, setData] = useState<MoviesPaginatedItemsResponse | undefined>(undefined);
+  const [page, setPage] = useState<number>(currentPage);
+
+
+  useEffect(() => {
+    setIsLoading(true);
+    axios
+      .get<MoviesPaginatedItemsResponse>(
+        `${baseURL}/${APIEndpointsUrls.Movies}/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          timeout: 20000,
+          params: {page: page}
+        }
+      )
+      .then(({ data }) => {
+        setIsLoading(false);
+        setData(data);
+      })
+      .catch((e) => {
+        setIsLoading(false);
+        setError(e.toString());
+        console.log(e);
+      });
+  }, [page]);
+
+  return { data, setPage, page, isLoading, error };
 }

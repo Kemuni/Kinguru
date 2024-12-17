@@ -9,7 +9,7 @@ export default function Home() {
     <div className="flex flex-col h-full items-center justify-center gap-9 px-4 py-8">
       <div className="flex flex-col gap-1 bg-[var(--native-bg-color)] p-3 rounded-2xl">
         <Logo />
-        <h3 className="font-[family-name:var(--font-subheader)] text-xl text-center">Сервис по поиску фильмов и сериалов</h3>
+        <h3 className="font-[family-name:var(--font-subheader)] text-xl text-center">Сервис по поиску фильмов</h3>
       </div>
       {/* ДЛЯ БУДУЩИХ ФИЧ */}
       {/*<div className="flex flex-col bg-[var(--native-bg-color)] p-3 gap-2 rounded-2xl">*/}

@@ -5,12 +5,30 @@ import {Button} from "@/components/Button";
 import React, {FC} from "react";
 import SearchIco from "@/public/static/icons/seacrh.svg";
 import {MovieCardInfoCatalog} from "@/components/MovieCardInfoCatalog";
-import {useGetRandomMovieListItems} from "@/hooks/movie";
+import {useGetMovieAndPagesListItems} from "@/hooks/movie";
+import ChevronIco from "@/public/static/icons/chevron.svg";
 
-
+enum PageActionType {
+  NEXT = 'NEXT',
+  PREVIOUS = 'PREVIOUS',
+}
 
 const CatalogCard: FC = () => {
-  const { movies, isLoading} = useGetRandomMovieListItems();
+  const { data, isLoading, page, setPage } = useGetMovieAndPagesListItems(1);
+
+
+  function handleButtonClick(type: PageActionType) {
+    if (data == undefined) return;
+    switch (type) {
+      case PageActionType.NEXT:
+        if (page < data?.pager.pages_count) setPage(page + 1);
+        break;
+      case PageActionType.PREVIOUS:
+        if (page > 1) setPage(page - 1);
+        break;
+    }
+  }
+
   return (
     <div className="flex flex-col flex-grow overflow-hidden bg-[var(--native-bg-color)] mx-3 py-4 px-4 rounded-2xl w-full divide-y-2 divide-[var(--additional-hint-fill)] h-full">
       <div className="flex flex-col gap-4 pb-2">
@@ -52,49 +70,28 @@ const CatalogCard: FC = () => {
             {
               isLoading
                 ? <h4>Загружается</h4>
-                : movies.map((movie) => (
+                : data?.items.map((movie) => (
                     <MovieCardInfoCatalog movie={movie} key={movie.id} />
                   ))
             }
           </div>
         </div>
-        <div className="flex items-center justify-center">
-          <div>
-            <nav className="isolate inline-flex -space-x-px rounded-md" aria-label="Pagination">
-              <a href="#"
-                 className="rounded-l-2xl relative items-center px-3 py-2 text-sm font-[family-name:var(--second-family)] text-[var(--native-text-color)] ring-1 ring-[var(--additional-hint-fill)] hover:bg-[var(--native-hint-color)]">
-                <span className="sr-only">Previous</span>
-                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path fill-rule="evenodd"
-                        d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
-                        clip-rule="evenodd"></path>
-                </svg>
-              </a>
-              <a href="#" aria-current="page"
-                 className="relative items-center px-3 py-2 text-sm font-[family-name:var(--second-family)] text-[var(--native-text-color)] ring-1 ring-[var(--additional-hint-fill)] hover:bg-[var(--native-hint-color)]">01</a>
-              <a href="#"
-                 className="relative items-center px-3 py-2 text-sm font-[family-name:var(--second-family)] text-[var(--native-text-color)] ring-1 ring-[var(--additional-hint-fill)] hover:bg-[var(--native-hint-color)]">02</a>
-              <a href="#"
-                 className="relative items-center px-3 py-2 text-sm font-[family-name:var(--second-family)] text-[var(--native-text-color)] ring-1 ring-[var(--additional-hint-fill)] hover:bg-[var(--native-hint-color)]">03</a>
-              <span
-                className="relative items-center px-3 py-2 text-sm font-[family-name:var(--second-family)] text-[var(--native-text-color)] ring-1 ring-[var(--additional-hint-fill)] hover:bg-[var(--native-hint-color)]">...</span>
-              <a href="#"
-                 className="relative items-center px-3 py-2 text-sm font-[family-name:var(--second-family)] text-[var(--native-text-color)] ring-1 ring-[var(--additional-hint-fill)] hover:bg-[var(--native-hint-color)]">08</a>
-              <a href="#"
-                 className="relative items-center px-3 py-2 text-sm font-[family-name:var(--second-family)] text-[var(--native-text-color)] ring-1 ring-[var(--additional-hint-fill)] hover:bg-[var(--native-hint-color)]">09</a>
-              <a href="#"
-                 className="relative items-center px-3 py-2 text-sm font-[family-name:var(--second-family)] text-[var(--native-text-color)] ring-1 ring-[var(--additional-hint-fill)] hover:bg-[var(--native-hint-color)]">10</a>
-              <a href="#"
-                 className="rounded-r-2xl relative items-center px-3 py-2 text-sm font-[family-name:var(--second-family)] text-[var(--native-text-color)] ring-1 ring-[var(--additional-hint-fill)] hover:bg-[var(--native-hint-color)]">
-                <span className="sr-only">Next</span>
-                <svg className="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path fill-rule="evenodd"
-                        d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
-                        clip-rule="evenodd"></path>
-                </svg>
-              </a>
-            </nav>
-          </div>
+        <div className="flex flex-row justify-around mb-2 lg:mb-0">
+          <Button
+            variant="secondary_dark" size="icon_auto" className="rounded-full p-2 drop-shadow-md"
+            onClick={() => handleButtonClick(PageActionType.PREVIOUS)}
+            disabled={page == 1}
+          >
+            <Image width={48} height={48} src={ChevronIco} alt="Back"/>
+          </Button>
+          <p className="text-center font-[family-name:var(--font-subheader)] text-2xl my-auto">{page} / {data?.pager.pages_count}</p>
+          <Button
+            variant="secondary_dark" size="icon_auto" className="rounded-full p-2 drop-shadow-md"
+            onClick={() => handleButtonClick(PageActionType.NEXT)}
+            disabled={page == data?.pager.pages_count}
+          >
+            <Image width={48} height={48} src={ChevronIco} className="rotate-180" alt="Next"/>
+          </Button>
         </div>
 
       </div>
