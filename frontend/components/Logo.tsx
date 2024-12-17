@@ -14,7 +14,7 @@ interface LogoProps extends HTMLAttributes<HTMLImageElement>{
 const Logo: React.FC<LogoProps> = ({ size = logoSizes[0], className, style }) => {
   if (size === "sm")
     return (
-      <Image width={48} height={48} src={KangarooLogo} alt="Logo" style={style} className={className}/>
+      <Image width={32} height={32} src={KangarooLogo} alt="Logo" style={style} className={className}/>
     )
   const textClass = (size == "xl" ? "text-6xl" : "text-5xl");
   const logoSize = (size == "xl" ? 64 : 48)
