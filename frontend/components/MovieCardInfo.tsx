@@ -30,10 +30,12 @@ export const MovieCardInfo: FC<MovieCardInfoProps> = ({ movie }) => {
         <div className="flex flex-col gap-1 w-full overflow-y-scroll absolute top-0 bottom-0 left-0"
              style={{scrollbarWidth: "none" }}
         >
-          <div className="relative w-full flex-grow max-h-[60dvh] sm:max-h-[55dvh] aspect-2/3">
-            <Image fill
-                 sizes="100%"
-                 className="object-cover rounded-xl"
+          <div className="relative flex-grow-0 aspect-2/3">
+            <Image
+                 width="0"
+                 height="0"
+                 sizes="100vw"
+                 className="object-cover rounded-xl w-full h-auto aspect-2/3"
                  style={isPosterLoading ? {display: "none"} : {}}
                  onLoad={() => setPosterLoading(false)}
                  src={`${baseURL}/${APIEndpointsUrls.MoviePoster}${movie.image_path}`}
@@ -177,10 +179,10 @@ const MovieCardSkeleton: FC = () => {
     <TabList activeTabIndex={0}>
       <TabItem label="О фильме">
         <div className="flex flex-col gap-2 w-full h-full animate-pulse">
-          <div className="relative w-full flex-grow max-h-[48dvh] sm:max-h-[46dvh] aspect-2/3">
+          <div className="relative flex-grow-0 aspect-2/3">
             <Image fill
                    sizes="100%"
-                   className="object-cover rounded-xl"
+                   className="object-cover rounded-xl w-full h-full aspect-2/3"
                    src={PosterPlaceholder}
                    alt="Content image"/>
           </div>

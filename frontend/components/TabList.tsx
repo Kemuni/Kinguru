@@ -21,7 +21,7 @@ export const TabList: React.FC<TabListProps> = ({ children, activeTabIndex = 0 }
 
   return (
     <div className="w-full h-full flex flex-col">
-      <nav className="mb-3">
+      <nav className="mb-2">
         <ul className="flex justify-center" role="tablist">
           {tabs.map((tab, index) => (
             <li key={`tab-${index}`}>
