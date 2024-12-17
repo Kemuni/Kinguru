@@ -1,4 +1,4 @@
-# KinGuru - Backend 🎬
+# KinGuru - Frontend 🎬
 ___
 
 ## Стек технологий 📝
