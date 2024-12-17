@@ -75,3 +75,33 @@ export const useGetRecommendationMovieListItems = (likedMovies: number[], dislik
 
   return { movies, isLoading, error };
 }
+
+export const useGetMovieById = (id: number) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [movie, setMovie] = useState<Movie>();
+
+  useEffect(() => {
+    setIsLoading(true);
+    axios
+      .get<Movie>(
+        `${baseURL}/movies/${id}/`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          timeout: 20000
+        }
+      )
+      .then(({ data }) => {
+        setIsLoading(false);
+        setMovie(data);
+      })
+      .catch((e) => {
+        setIsLoading(false);
+        setError(e.toString());
+        console.log(e);
+      });
+  }, []);
+
+  return { movie, isLoading, error };
+}

@@ -161,7 +161,7 @@ const MovieCardSkeleton: FC = () => {
     <TabList activeTabIndex={0}>
       <TabItem label="О фильме">
         <div className="flex flex-col gap-2 w-full h-full animate-pulse">
-          <div className="relative w-full flex-grow max-h-[48dvh] sm:max-h-[46dvh] aspect-2/3">
+          <div className="relative w-full flex-grow max-h-[47dvh] sm:max-h-[45dvh] aspect-2/3">
             <Image fill
                    sizes="100%"
                    className="object-cover rounded-xl"
@@ -192,7 +192,7 @@ const MovieCardSkeleton: FC = () => {
                               font-[family-name:var(--font-text)] text-[var(--native-hint-color)] text-sm">
             <div className="h-6 bg-gray-500 rounded w-16"></div>
             <div className="h-6 bg-gray-500 rounded w-12"></div>
-            <div className="h-6 bg-gray-500 rounded w-18"></div>
+            <div className="h-6 bg-gray-500 rounded w-16"></div>
           </div>
         </div>
       </TabItem>

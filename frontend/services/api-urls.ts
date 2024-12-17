@@ -5,4 +5,5 @@ export enum APIEndpointsUrls {
   RandomMovies = "movies/random",
   RecommendationMovies = "movies/recommendations",
   MoviePoster = "movies/poster",
+
 }

@@ -78,7 +78,7 @@ export const MovieCardInfoCatalog: FC<MovieCardInfoCatalogProps> = ({ movie }) =
           }
         </div>
         <div className="mt-auto">
-          <Link className="flex flex-col items-center justify-center pt-4" href={``}>
+          <Link className="flex flex-col items-center justify-center pt-4" href={`/catalog/${movie.id}`}>
             <Button variant="dark" size="catalog">Перейти</Button>
           </Link>
         </div>

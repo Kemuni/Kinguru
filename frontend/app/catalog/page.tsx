@@ -9,6 +9,8 @@ import CatalogCard from "@/components/CatalogCard";
 
 
 export default function Catalog() {
+
+
   return (
     <div className="flex flex-col h-dvh max-h-dvh items-center justify-center gap-1">
       <header className="grid grid-cols-[48px_1fr] w-full items-center justify-center gap-3 py-0.5 px-4 mx-4 mt-2">
